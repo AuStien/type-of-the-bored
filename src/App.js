@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 function App() {
   const [input, setInput] = useState("")
   const [word, setWord] = useState("")
+  const [desc, setDesc] = useState("")
+  
 
   useEffect(() => {
     getWord()
@@ -19,6 +21,7 @@ function App() {
     .then(res => res.json())
     .then(data => {
       setWord(data[0].word)
+      setDesc(data[0].definition)
       setInput("")
     })
   }
@@ -35,8 +38,9 @@ function App() {
 
   return (
     <div className="App" style={{position: "fixed", top: "35%", left: "40%", width: "100%", display: "flex", justifyContent: "center", flexDirection: "column", }}>
-      <div style={{width: "200px"}}>
+      <div style={{width: "400px"}}>
         <p style={{textAlign: "left"}}>{word.split("").map(handle)}</p>
+        <p style={{fontSize: "17px", color: "GrayText"}}>{desc}</p>
         <input value={input} onChange={e => setInput(e.target.value)} style={{fontSize: "xx-large"}} />    
       </div>
     </div>
