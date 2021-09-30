@@ -1,9 +1,12 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
+	"os/signal"
 
 	"github.com/spf13/cobra"
 )
@@ -27,7 +30,26 @@ var totbCmd = &cobra.Command{
 			panic(err)
 		}
 
-		fmt.Println(word.Word)
+		fmt.Printf("%s - %s\n", word.Word, word.Definition)
+
+		scanner := bufio.NewScanner(os.Stdin)
+		for scanner.Scan() {
+			if scanner.Text() == word.Word {
+				fmt.Printf("\033[1A\033[K\033[1A\033[K\u2714 %s - %s\n", word.Word, word.Definition)
+				word, err = GetWord()
+				if err != nil {
+					panic(err)
+				}
+
+				fmt.Printf("%s - %s\n", word.Word, word.Definition)
+			} else {
+				fmt.Print("\033[1A\033[K")
+			}
+		}
+		if scanner.Err() != nil {
+			panic(scanner.Err)
+		}
+
 	},
 }
 
@@ -46,5 +68,14 @@ func GetWord() (*Word, error) {
 }
 
 func main() {
+	go func() {
+		sigchan := make(chan os.Signal)
+		signal.Notify(sigchan, os.Interrupt)
+		<-sigchan
+
+		fmt.Println("")
+
+		os.Exit(0)
+	}()
 	totbCmd.Execute()
 }
