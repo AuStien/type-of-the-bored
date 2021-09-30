@@ -16,9 +16,9 @@ type Fetch struct {
 }
 
 type Word struct {
-	Word           string `json:"word"`
-	Definition     string `json:"definition"`
-	Pronounciation string `json:"pronounciation"`
+	Word          string `json:"word"`
+	Definition    string `json:"definition"`
+	Pronunciation string `json:"pronunciation"`
 }
 
 var totbCmd = &cobra.Command{
@@ -29,19 +29,18 @@ var totbCmd = &cobra.Command{
 		if err != nil {
 			panic(err)
 		}
-
-		fmt.Printf("%s - %s\n", word.Word, word.Definition)
+		fmt.Print(WordStr(word))
 
 		scanner := bufio.NewScanner(os.Stdin)
 		for scanner.Scan() {
 			if scanner.Text() == word.Word {
-				fmt.Printf("\033[1A\033[K\033[1A\033[K\u2714 %s - %s\n", word.Word, word.Definition)
+				fmt.Printf("\033[1A\033[K\033[1A\033[K\u2714 %s", WordStr(word))
 				word, err = GetWord()
 				if err != nil {
 					panic(err)
 				}
 
-				fmt.Printf("%s - %s\n", word.Word, word.Definition)
+				fmt.Print(WordStr(word))
 			} else {
 				fmt.Print("\033[1A\033[K")
 			}
@@ -65,6 +64,10 @@ func GetWord() (*Word, error) {
 		return nil, err
 	}
 	return &words[0], nil
+}
+
+func WordStr(w *Word) string {
+	return fmt.Sprintf("%s (%s) - %s\n", w.Word, w.Pronunciation, w.Definition)
 }
 
 func main() {
