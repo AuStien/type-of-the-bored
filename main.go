@@ -49,6 +49,7 @@ var totbCmd = &cobra.Command{
 			} else {
 				fmt.Print("\033[1A\033[K")
 			}
+      fmt.Print("\n\033[1A")
 		}
 		if scanner.Err() != nil {
 			panic(scanner.Err)
