@@ -35,6 +35,7 @@ var totbCmd = &cobra.Command{
 		}
 
 		fmt.Print(WordStr(word, expert))
+    fmt.Print("\n\033[1A")
 
 		scanner := bufio.NewScanner(os.Stdin)
 		for scanner.Scan() {
