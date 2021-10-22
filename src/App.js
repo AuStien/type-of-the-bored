@@ -12,6 +12,9 @@ function App() {
 
   useEffect(() => {
     if (input !== "" && input === word) {
+	  setInput("")
+	  setDesc("...")
+	  setWord("Loading...")
       getWord()
     }
   }, [input])
