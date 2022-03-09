@@ -9,7 +9,6 @@ function App() {
   useEffect(() => {
     const a = async () => {
       const w = await getWord();
-      console.log(w);
       setInput("");
       setDesc(w.definition);
       setWord(w.word);
