@@ -35,7 +35,7 @@ var totbCmd = &cobra.Command{
 		}
 
 		fmt.Print(WordStr(word, expert))
-    fmt.Print("\n\033[1A")
+		fmt.Print("\n\033[1A")
 
 		scanner := bufio.NewScanner(os.Stdin)
 		for scanner.Scan() {
@@ -50,7 +50,7 @@ var totbCmd = &cobra.Command{
 			} else {
 				fmt.Print("\033[1A\033[K")
 			}
-      fmt.Print("\n\033[1A")
+			fmt.Print("\n\033[1A")
 		}
 		if scanner.Err() != nil {
 			panic(scanner.Err)
