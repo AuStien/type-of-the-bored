@@ -1,42 +1,24 @@
 import React, { useState, useEffect } from "react";
+import tilfeldigeord from "tilfeldigeord";
 
 function App() {
   const [input, setInput] = useState("");
   const [word, setWord] = useState("");
-  const [desc, setDesc] = useState("");
-  const [nextWord, setNextWord] = useState("");
 
   useEffect(() => {
-    (async () => {
-      const w = await getWord();
-      setInput("");
-      setDesc(w.definition);
-      setWord(w.word);
-    })();
+    newWord()
   }, []);
 
   useEffect(() => {
-    getWord().then((w) => setNextWord(w));
-  }, [word]);
-
-  useEffect(() => {
     if (input !== "" && input === word) {
-      setInput("");
-      setDesc(nextWord.definition);
-      setWord(nextWord.word);
+      newWord()
     }
-  }, [input]);
+  }, [input, word]);
 
-  const getWord = async () => {
-    return new Promise((resolve, reject) => {
-      fetch("https://random-words-api.vercel.app/word")
-        .then((res) => res.json())
-        .then((data) => {
-          resolve(data[0]);
-        })
-        .catch((e) => reject(e));
-    });
-  };
+  const newWord = () => {
+    setInput("");
+    setWord(tilfeldigeord.getTilfeldigOrd());
+  }
 
   const handle = (l, i) => {
     if (i >= input.length) {
@@ -75,7 +57,6 @@ function App() {
     >
       <div style={{ width: "400px" }}>
         <p style={{ textAlign: "left" }}>{word?.split("").map(handle)}</p>
-        <p style={{ fontSize: "17px", color: "GrayText" }}>{desc}</p>
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
