@@ -7,13 +7,12 @@ function App() {
   const [nextWord, setNextWord] = useState("");
 
   useEffect(() => {
-    const a = async () => {
+    (async () => {
       const w = await getWord();
       setInput("");
       setDesc(w.definition);
       setWord(w.word);
-    };
-    a();
+    })();
   }, []);
 
   useEffect(() => {
