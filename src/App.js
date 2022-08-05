@@ -4,6 +4,10 @@ import tilfeldigeord from "tilfeldigeord";
 function App() {
   const [input, setInput] = useState("");
   const [word, setWord] = useState("");
+  const [startTime, setStartTime] = useState(Date.now())
+  const [time, setTime] = useState(0)
+  const [finishedWords, setFinishedWords] = useState(0)
+  const [wpm, setWpm] = useState(0)
 
   useEffect(() => {
     newWord()
@@ -12,8 +16,17 @@ function App() {
   useEffect(() => {
     if (input !== "" && input === word) {
       newWord()
+      setFinishedWords(finishedWords + 2)
     }
   }, [input, word]);
+
+  useEffect(() => {
+    setWpm(Math.round(finishedWords/(time/60)))
+  }, [finishedWords, time])
+
+  setInterval(() => {
+    setTime(Math.round((Date.now() - startTime) / 1000))
+  }, 1000)
 
   const newWord = () => {
     setInput("");
@@ -56,6 +69,7 @@ function App() {
       }}
     >
       <div style={{ width: "400px" }}>
+        <p>WPM: {wpm}</p>
         <p style={{ textAlign: "left" }}>{word?.split("").map(handle)}</p>
         <input
           value={input}
