@@ -2,13 +2,13 @@ package main
 
 import (
 	"bufio"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
 
 	"github.com/spf13/cobra"
+	"golang.org/x/net/html"
 )
 
 type Fetch struct {
@@ -16,9 +16,8 @@ type Fetch struct {
 }
 
 type Word struct {
-	Word          string `json:"word"`
-	Definition    string `json:"definition"`
-	Pronunciation string `json:"pronunciation"`
+	Word       string `json:"word"`
+	Definition string `json:"definition"`
 }
 
 var totbCmd = &cobra.Command{
@@ -60,24 +59,45 @@ var totbCmd = &cobra.Command{
 }
 
 func GetWord() (*Word, error) {
-	resp, err := http.Get("https://random-words-api.vercel.app/word")
+	resp, err := http.Get("https://randomword.com")
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
 
-	var words []Word
-	if err := json.NewDecoder(resp.Body).Decode(&words); err != nil {
+	doc, err := html.Parse(resp.Body)
+	if err != nil {
 		return nil, err
 	}
-	return &words[0], nil
+
+	var word Word
+	var f func(*html.Node)
+	f = func(n *html.Node) {
+		if n.Type == html.ElementNode && n.Data == "div" {
+			for _, a := range n.Attr {
+				if a.Key == "id" && a.Val == "random_word" {
+					word.Word = n.FirstChild.Data
+				} else if a.Key == "id" && a.Val == "random_word_definition" {
+					word.Definition = n.FirstChild.Data
+				}
+			}
+		}
+
+		// traverses the HTML of the webpage from the first child node
+		for c := n.FirstChild; c != nil; c = c.NextSibling {
+			f(c)
+		}
+	}
+	f(doc)
+
+	return &word, nil
 }
 
 func WordStr(w *Word, expert bool) string {
 	if expert {
-		return fmt.Sprintf("%s - %s\n", w.Pronunciation, w.Definition)
+		return fmt.Sprintf("%s\n", w.Definition)
 	} else {
-		return fmt.Sprintf("%s (%s) - %s\n", w.Word, w.Pronunciation, w.Definition)
+		return fmt.Sprintf("%s - %s\n", w.Word, w.Definition)
 	}
 }
 
