@@ -39,7 +39,7 @@ var totbCmd = &cobra.Command{
 		scanner := bufio.NewScanner(os.Stdin)
 		for scanner.Scan() {
 			if scanner.Text() == word.Word {
-				fmt.Printf("\033[1A\033[K\033[1A\033[K\u2714 %s", WordStr(word, false))
+				fmt.Printf("\033[1A\033[K\033[1A\033[K")
 				word, err = GetWord()
 				if err != nil {
 					panic(err)
