@@ -20,6 +20,9 @@ type Word struct {
 	Definition string `json:"definition"`
 }
 
+var fetchWord = make(chan bool)
+var nextWord = make(chan Word)
+
 var totbCmd = &cobra.Command{
 	Use: "totb",
 	Run: func(cmd *cobra.Command, args []string) {
@@ -27,6 +30,8 @@ var totbCmd = &cobra.Command{
 		if err != nil {
 			panic(err)
 		}
+
+		fetchWord <- true
 
 		expert, err := cmd.Flags().GetBool("expert")
 		if err != nil {
@@ -40,10 +45,9 @@ var totbCmd = &cobra.Command{
 		for scanner.Scan() {
 			if scanner.Text() == word.Word {
 				fmt.Printf("\033[1A\033[K\033[1A\033[K")
-				word, err = GetWord()
-				if err != nil {
-					panic(err)
-				}
+
+				word = <-nextWord
+				fetchWord <- true
 
 				fmt.Print(WordStr(word, expert))
 			} else {
@@ -58,16 +62,16 @@ var totbCmd = &cobra.Command{
 	},
 }
 
-func GetWord() (*Word, error) {
+func GetWord() (Word, error) {
 	resp, err := http.Get("https://randomword.com")
 	if err != nil {
-		return nil, err
+		return Word{}, err
 	}
 	defer resp.Body.Close()
 
 	doc, err := html.Parse(resp.Body)
 	if err != nil {
-		return nil, err
+		return Word{}, err
 	}
 
 	var word Word
@@ -90,10 +94,10 @@ func GetWord() (*Word, error) {
 	}
 	f(doc)
 
-	return &word, nil
+	return word, nil
 }
 
-func WordStr(w *Word, expert bool) string {
+func WordStr(w Word, expert bool) string {
 	if expert {
 		return fmt.Sprintf("%s\n", w.Definition)
 	} else {
@@ -115,5 +119,17 @@ func main() {
 
 		os.Exit(0)
 	}()
+
+	go func() {
+		for {
+			<-fetchWord
+			w, err := GetWord()
+			if err != nil {
+				panic(err)
+			}
+			nextWord <- w
+		}
+	}()
+
 	totbCmd.Execute()
 }
