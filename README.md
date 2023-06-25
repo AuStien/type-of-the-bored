@@ -1,9 +1,10 @@
 # Type of the Bored
 
-Type the word that shows up on screen. ***GET INSTANT FEEDBACK***
+Type the word that shows up, ***GET INSTANT FEEDBACK; NOW IN COLORS!***
 
+## Running
 
-Fetches random word using the [tilfeldigeord](https://www.npmjs.com/package/tilfeldigeord) node package, so thank you for that [Arien Shibani](https://github.com/arienshibani)!
+Currently requires Go
 
-
-Hosted at https://paastien.no/totb
+1. Clone this repo
+2. `go run main.go`

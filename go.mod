@@ -3,11 +3,8 @@ module github.com/austien/type-of-the-bored
 go 1.20
 
 require (
-	github.com/spf13/cobra v1.2.1
+	github.com/eiannone/keyboard v0.0.0-20220611211555-0d226195f203
 	golang.org/x/net v0.0.0-20210405180319-a5a99cb37ef4
 )
 
-require (
-	github.com/inconshreveable/mousetrap v1.0.0 // indirect
-	github.com/spf13/pflag v1.0.5 // indirect
-)
+require golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a // indirect

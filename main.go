@@ -1,129 +1,40 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"net/http"
-	"os"
-	"os/signal"
 
-	"github.com/spf13/cobra"
-	"golang.org/x/net/html"
+	"github.com/eiannone/keyboard"
+
+	"github.com/austien/type-of-the-bored/ansi"
+	"github.com/austien/type-of-the-bored/words"
 )
 
-type Fetch struct {
-	Words []Word
-}
-
-type Word struct {
-	Word       string `json:"word"`
-	Definition string `json:"definition"`
-}
-
-var fetchWord = make(chan bool)
-var nextWord = make(chan Word)
-
-var totbCmd = &cobra.Command{
-	Use: "totb",
-	Run: func(cmd *cobra.Command, args []string) {
-		word, err := GetWord()
-		if err != nil {
-			panic(err)
-		}
-
-		fetchWord <- true
-
-		expert, err := cmd.Flags().GetBool("expert")
-		if err != nil {
-			panic(err)
-		}
-
-		fmt.Print(WordStr(word, expert))
-		fmt.Print("\n\033[1A")
-
-		scanner := bufio.NewScanner(os.Stdin)
-		for scanner.Scan() {
-			if scanner.Text() == word.Word {
-				fmt.Printf("\033[1A\033[K\033[1A\033[K")
-
-				word = <-nextWord
-				fetchWord <- true
-
-				fmt.Print(WordStr(word, expert))
-			} else {
-				fmt.Print("\033[1A\033[K")
-			}
-			fmt.Print("\n\033[1A")
-		}
-		if scanner.Err() != nil {
-			panic(scanner.Err)
-		}
-
-	},
-}
-
-func GetWord() (Word, error) {
-	resp, err := http.Get("https://randomword.com")
-	if err != nil {
-		return Word{}, err
-	}
-	defer resp.Body.Close()
-
-	doc, err := html.Parse(resp.Body)
-	if err != nil {
-		return Word{}, err
-	}
-
-	var word Word
-	var f func(*html.Node)
-	f = func(n *html.Node) {
-		if n.Type == html.ElementNode && n.Data == "div" {
-			for _, a := range n.Attr {
-				if a.Key == "id" && a.Val == "random_word" {
-					word.Word = n.FirstChild.Data
-				} else if a.Key == "id" && a.Val == "random_word_definition" {
-					word.Definition = n.FirstChild.Data
-				}
-			}
-		}
-
-		// traverses the HTML of the webpage from the first child node
-		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			f(c)
-		}
-	}
-	f(doc)
-
-	return word, nil
-}
-
-func WordStr(w Word, expert bool) string {
-	if expert {
-		return fmt.Sprintf("%s\n", w.Definition)
-	} else {
-		return fmt.Sprintf("%s - %s\n", w.Word, w.Definition)
-	}
-}
-
-func init() {
-	totbCmd.Flags().BoolP("expert", "e", false, "Expert Mode")
-}
+var triggerFetchWord = make(chan bool)
+var nextWord = make(chan *words.Word)
 
 func main() {
-	go func() {
-		sigchan := make(chan os.Signal)
-		signal.Notify(sigchan, os.Interrupt)
-		<-sigchan
+	keysEvents, err := keyboard.GetKeys(10)
+	if err != nil {
+		panic(err)
+	}
+	defer func() {
+		_ = keyboard.Close()
 
-		fmt.Println("")
-
-		os.Exit(0)
+		// Capture panics, to show cursor
+		err := recover()
+		if err != nil {
+			fmt.Print(ansi.SHOW_CURSOR)
+			fmt.Printf("\nerr: %s\n", err)
+		}
 	}()
 
+	fmt.Println("Press ESC or Ctrl+C to quit")
+
+	// Fetch next word async
 	go func() {
 		for {
-			<-fetchWord
-			w, err := GetWord()
+			<-triggerFetchWord
+			w, err := words.NewWord()
 			if err != nil {
 				panic(err)
 			}
@@ -131,5 +42,45 @@ func main() {
 		}
 	}()
 
-	totbCmd.Execute()
+	word, err := words.NewWord()
+	if err != nil {
+		panic(err)
+	}
+
+	triggerFetchWord <- true
+
+	// Hide cursor
+	fmt.Print(ansi.HIDE_CURSOR)
+
+	for {
+		fmt.Printf("%s%s", ansi.CLEAR_LINE, word.ToString())
+
+		event := <-keysEvents
+		if event.Err != nil {
+			panic(event.Err)
+		}
+
+		// Break if ESC or Ctrl + C is inputed
+		if event.Key == keyboard.KeyEsc || event.Key == keyboard.KeyCtrlC {
+			break
+		}
+
+		// Handle backspace
+		if event.Key == keyboard.KeyBackspace || event.Key == keyboard.KeyBackspace2 {
+			word.Previous()
+			continue
+		}
+
+		word.CompareCurrentLetter(event.Rune)
+
+		if word.IsComplete() {
+			word = <-nextWord
+			triggerFetchWord <- true
+		} else {
+			word.Next()
+		}
+	}
+
+	// 	Show cursor
+	fmt.Printf("%s\n", ansi.SHOW_CURSOR)
 }
