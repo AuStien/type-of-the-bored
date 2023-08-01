@@ -1,6 +1,7 @@
 package words
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -8,22 +9,30 @@ import (
 	"golang.org/x/net/html"
 )
 
-type Word struct {
+type Text struct {
 	Letters         []letter
 	Word            string
-	Definition      string
+	Description     string
 	currentLetterNo int
 }
 
-func NewWord() (*Word, error) {
-	fetchedWord, definition, err := fetchWord()
+func NewText(useWord bool) (*Text, error) {
+	var fetchedWord string
+	var description string
+	var err error
+	if useWord {
+		fetchedWord, description, err = fetchWord()
+	} else {
+		fetchedWord, description, err = fetchQuote()
+	}
+
 	if err != nil {
 		return nil, err
 	}
 
-	w := &Word{
+	w := &Text{
 		Word:            fetchedWord,
-		Definition:      definition,
+		Description:     description,
 		Letters:         generateLetters(fetchedWord),
 		currentLetterNo: 0,
 	}
@@ -31,23 +40,23 @@ func NewWord() (*Word, error) {
 	return w, nil
 }
 
-func (w *Word) ToString() string {
+func (w *Text) ToString() string {
 	str := ""
 
 	for _, l := range w.Letters {
 		str = fmt.Sprintf("%s%s", str, l.ToString())
 	}
 
-	str = fmt.Sprintf("%s - %s", str, w.Definition)
+	str = fmt.Sprintf("%s - %s", str, w.Description)
 
 	return str
 }
 
-func (w *Word) CompareCurrentLetter(input rune) {
+func (w *Text) CompareCurrentLetter(input rune) {
 	w.Letters[w.currentLetterNo].CompareCharacter(input)
 }
 
-func (w *Word) Next() {
+func (w *Text) Next() {
 	if w.currentLetterNo < len(w.Letters)-1 {
 		w.Letters[w.currentLetterNo].HasUnderline = false
 		w.currentLetterNo++
@@ -55,7 +64,7 @@ func (w *Word) Next() {
 	}
 }
 
-func (w *Word) Previous() {
+func (w *Text) Previous() {
 	if w.currentLetterNo > 0 {
 		w.Letters[w.currentLetterNo].HasUnderline = false
 		w.Letters[w.currentLetterNo].Color = ansi.NONE
@@ -67,7 +76,7 @@ func (w *Word) Previous() {
 	}
 }
 
-func (w *Word) IsComplete() bool {
+func (w *Text) IsComplete() bool {
 	for _, l := range w.Letters {
 		if l.Color.Name == ansi.RED.Name || l.Color.Name == ansi.NONE.Name {
 			return false
@@ -125,4 +134,28 @@ func fetchWord() (string, string, error) {
 	f(doc)
 
 	return word, definition, nil
+}
+
+func fetchQuote() (string, string, error) {
+	resp, err := http.Get("https://api.quotable.io/quotes/random?minLength=100")
+	if err != nil {
+		return "", "", err
+	}
+	defer resp.Body.Close()
+
+	type Quote struct {
+		Content string `json:"content"`
+		Author  string `json:"author"`
+	}
+
+	type responseJSON struct {
+		Quotes []Quote
+	}
+
+	r := []Quote{}
+	if err := json.NewDecoder(resp.Body).Decode(&r); err != nil {
+		return "", "", err
+	}
+
+	return r[0].Content, r[0].Author, nil
 }

@@ -9,21 +9,19 @@ import (
 )
 
 func TestNewWord(t *testing.T) {
-	word, err := NewWord()
+	_, err := NewText(false)
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	t.Log(word.ToString())
 }
 
 func TestWord(t *testing.T) {
 	const WORD = "foobar"
 
-	word := Word{
-		Word:       WORD,
-		Letters:    generateLetters(WORD),
-		Definition: "Lorem Ipsum",
+	word := Text{
+		Word:        WORD,
+		Letters:     generateLetters(WORD),
+		Description: "Lorem Ipsum",
 	}
 
 	if err := testLetter(word.Letters[word.currentLetterNo], 'f', ansi.NONE, true); err != nil {

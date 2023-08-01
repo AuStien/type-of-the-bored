@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 
 	"github.com/eiannone/keyboard"
@@ -10,9 +11,14 @@ import (
 )
 
 var triggerFetchWord = make(chan bool)
-var nextWord = make(chan *words.Word)
+var nextWord = make(chan *words.Text)
 
 func main() {
+
+	useWordFlag := flag.Bool("word", false, "Type words instead of quotes")
+
+	flag.Parse()
+
 	keysEvents, err := keyboard.GetKeys(10)
 	if err != nil {
 		panic(err)
@@ -34,7 +40,7 @@ func main() {
 	go func() {
 		for {
 			<-triggerFetchWord
-			w, err := words.NewWord()
+			w, err := words.NewText(*useWordFlag)
 			if err != nil {
 				panic(err)
 			}
@@ -42,7 +48,7 @@ func main() {
 		}
 	}()
 
-	word, err := words.NewWord()
+	word, err := words.NewText(*useWordFlag)
 	if err != nil {
 		panic(err)
 	}
