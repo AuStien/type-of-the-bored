@@ -33,7 +33,7 @@ var (
 
 	RED = CODE{
 		Name:  "RED",
-		Value: "\033[31m",
+		Value: "\033[41m",
 	}
 
 	HIDE_CURSOR = CODE{

@@ -38,9 +38,5 @@ func (l *letter) ToString() string {
 
 	color := l.Color.Value
 
-	if l.Character == ' ' && l.Color.Name == ansi.RED.Name {
-		color = "\033[41m"
-	}
-
 	return fmt.Sprintf("%s%s%s%s%s", underline, color, string(l.Character), ansi.RESET_UNDERLINE, ansi.RESET)
 }
