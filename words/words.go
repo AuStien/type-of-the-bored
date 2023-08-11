@@ -137,7 +137,7 @@ func fetchWord() (string, string, error) {
 }
 
 func fetchQuote() (string, string, error) {
-	resp, err := http.Get("https://api.quotable.io/quotes/random?minLength=100")
+	resp, err := http.Get("https://raw.githubusercontent.com/quotable-io/data/v0.3.5/data/quotes.json")
 	if err != nil {
 		return "", "", err
 	}
@@ -148,14 +148,13 @@ func fetchQuote() (string, string, error) {
 		Author  string `json:"author"`
 	}
 
-	type responseJSON struct {
-		Quotes []Quote
-	}
-
 	r := []Quote{}
 	if err := json.NewDecoder(resp.Body).Decode(&r); err != nil {
 		return "", "", err
 	}
 
-	return r[0].Content, r[0].Author, nil
+	rand.New(rand.NewSource(time.Now().Unix()))
+	q := r[rand.Intn(len(r))]
+
+	return q.Content, q.Author, nil
 }
