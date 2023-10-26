@@ -7,4 +7,7 @@ require (
 	golang.org/x/net v0.0.0-20210405180319-a5a99cb37ef4
 )
 
-require golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a // indirect
+require (
+	golang.org/x/sys v0.13.0 // indirect
+	golang.org/x/term v0.13.0 // indirect
+)

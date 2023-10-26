@@ -7,6 +7,7 @@ import (
 	"github.com/eiannone/keyboard"
 
 	"github.com/austien/type-of-the-bored/ansi"
+	"github.com/austien/type-of-the-bored/terminal"
 	"github.com/austien/type-of-the-bored/words"
 )
 
@@ -18,6 +19,11 @@ func main() {
 	useWordFlag := flag.Bool("word", false, "Type words instead of quotes")
 
 	flag.Parse()
+
+	cols, err := terminal.GetCols()
+	if err != nil {
+		panic(err)
+	}
 
 	keysEvents, err := keyboard.GetKeys(10)
 	if err != nil {
@@ -40,7 +46,7 @@ func main() {
 	go func() {
 		for {
 			<-triggerFetchWord
-			w, err := words.NewText(*useWordFlag)
+			w, err := words.NewText(*useWordFlag, cols)
 			if err != nil {
 				panic(err)
 			}
@@ -48,7 +54,7 @@ func main() {
 		}
 	}()
 
-	word, err := words.NewText(*useWordFlag)
+	word, err := words.NewText(*useWordFlag, cols)
 	if err != nil {
 		panic(err)
 	}

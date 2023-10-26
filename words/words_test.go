@@ -9,7 +9,7 @@ import (
 )
 
 func TestNewWord(t *testing.T) {
-	_, err := NewText(false)
+	_, err := NewText(false, -1)
 	if err != nil {
 		t.Fatal(err)
 	}

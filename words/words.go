@@ -18,16 +18,15 @@ type Text struct {
 	currentLetterNo int
 }
 
-func NewText(useWord bool) (*Text, error) {
+func NewText(useWord bool, maxLength int) (*Text, error) {
 	var fetchedWord string
 	var description string
 	var err error
 	if useWord {
 		fetchedWord, description, err = fetchWord()
 	} else {
-		fetchedWord, description, err = fetchQuote()
+		fetchedWord, description, err = fetchQuote(maxLength)
 	}
-
 	if err != nil {
 		return nil, err
 	}
@@ -138,7 +137,7 @@ func fetchWord() (string, string, error) {
 	return word, definition, nil
 }
 
-func fetchQuote() (string, string, error) {
+func fetchQuote(maxLength int) (string, string, error) {
 	resp, err := http.Get("https://raw.githubusercontent.com/quotable-io/data/v0.3.5/data/quotes.json")
 	if err != nil {
 		return "", "", err
@@ -156,7 +155,19 @@ func fetchQuote() (string, string, error) {
 	}
 
 	rand.New(rand.NewSource(time.Now().Unix()))
-	q := r[rand.Intn(len(r))]
 
-	return q.Content, q.Author, nil
+	if maxLength <= 0 {
+		q := r[rand.Intn(len(r))]
+		return q.Content, q.Author, nil
+	}
+
+	MAX_RETRIES := 100
+	for i := 0; i < MAX_RETRIES; i++ {
+		q := r[rand.Intn(len(r))]
+		if len(q.Content) <= maxLength {
+			return q.Content, q.Author, nil
+		}
+	}
+
+	return "", "", fmt.Errorf("Could not find quote with length less than %d", maxLength)
 }
