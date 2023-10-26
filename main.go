@@ -34,7 +34,7 @@ func main() {
 		}
 	}()
 
-	fmt.Println("Press ESC or Ctrl+C to quit")
+	fmt.Printf("Press ESC or Ctrl+C to quit\n\n")
 
 	// Fetch next word async
 	go func() {
@@ -59,7 +59,7 @@ func main() {
 	fmt.Print(ansi.HIDE_CURSOR)
 
 	for {
-		fmt.Printf("%s%s", ansi.CLEAR_LINE, word.ToString())
+		fmt.Printf("%s%s%s%s", ansi.CLEAR_LINE, ansi.MOVE_CURSOR_UP, ansi.CLEAR_LINE, word.ToString())
 
 		event := <-keysEvents
 		if event.Err != nil {

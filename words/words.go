@@ -3,7 +3,9 @@ package words
 import (
 	"encoding/json"
 	"fmt"
+	"math/rand"
 	"net/http"
+	"time"
 
 	"github.com/austien/type-of-the-bored/ansi"
 	"golang.org/x/net/html"
@@ -47,7 +49,7 @@ func (w *Text) ToString() string {
 		str = fmt.Sprintf("%s%s", str, l.ToString())
 	}
 
-	str = fmt.Sprintf("%s - %s", str, w.Description)
+	str = fmt.Sprintf("%s\n- %s", str, w.Description)
 
 	return str
 }

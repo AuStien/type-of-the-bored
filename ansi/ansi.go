@@ -16,6 +16,11 @@ var (
 		Value: "\033[2K\r",
 	}
 
+	MOVE_CURSOR_UP = CODE{
+		Name:  "MOVE_CURSOR_UP",
+		Value: "\033[1A",
+	}
+
 	UNDERLINE = CODE{
 		Name:  "UNDERLINE",
 		Value: "\033[4m",
