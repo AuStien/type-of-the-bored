@@ -42,6 +42,10 @@ func Text(letters []string, author string) templ.Component {
     #active {
       text-decoration: underline;
     }
+
+    .hidden {
+      display: none;
+    }
   `
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var2)
 		if templ_7745c5c3_Err != nil {
@@ -127,6 +131,15 @@ func Text(letters []string, author string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p><p id=\"success-message\" class=\"hidden\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Var10 := `All done! Press Enter to get next quote.`
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var10)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -139,8 +152,8 @@ func Text(letters []string, author string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var10 templ.ComponentScript = interact()
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var10.Call)
+		var templ_7745c5c3_Var11 templ.ComponentScript = interact()
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var11.Call)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -165,8 +178,8 @@ func Text(letters []string, author string) templ.Component {
 
 func interact() templ.ComponentScript {
 	return templ.ComponentScript{
-		Name: `__templ_interact_f2a4`,
-		Function: `function __templ_interact_f2a4(){const textParagraph = document.getElementById("text-paragraph");
+		Name: `__templ_interact_3517`,
+		Function: `function __templ_interact_3517(){const textParagraph = document.getElementById("text-paragraph");
   const letters = textParagraph.getElementsByClassName("letter");
 
   let hasStarted = false;
@@ -271,10 +284,11 @@ func interact() templ.ComponentScript {
       if (checkAllCorrect) {
         isAllCorrect = true;
         clearInterval(intervalID);
+        document.getElementById("success-message").classList.remove("hidden");
       }
     }
   }}`,
-		Call: templ.SafeScript(`__templ_interact_f2a4`),
+		Call: templ.SafeScript(`__templ_interact_3517`),
 	}
 }
 

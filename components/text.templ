@@ -17,6 +17,10 @@ templ Text(letters []string, author string) {
     #active {
       text-decoration: underline;
     }
+
+    .hidden {
+      display: none;
+    }
   </style>
 	<script>
   function next() {
@@ -35,6 +39,7 @@ templ Text(letters []string, author string) {
 			}
 		</p>
 		<p>- { author }</p>
+		<p id="success-message" class="hidden">All done! Press Enter to get next quote.</p>
 		<div on={ interact() }></div>
 		@onLoad(interact())
 	</div>
@@ -146,6 +151,7 @@ script interact() {
       if (checkAllCorrect) {
         isAllCorrect = true;
         clearInterval(intervalID);
+        document.getElementById("success-message").classList.remove("hidden");
       }
     }
   }
