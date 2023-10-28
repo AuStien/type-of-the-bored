@@ -1,6 +1,7 @@
 package words
 
 import (
+	"embed"
 	"encoding/json"
 	"fmt"
 	"math/rand"
@@ -10,6 +11,9 @@ import (
 	"github.com/austien/type-of-the-bored/ansi"
 	"golang.org/x/net/html"
 )
+
+//go:embed quotes.json
+var quotes embed.FS
 
 type Text struct {
 	Letters         []letter
@@ -138,11 +142,10 @@ func fetchWord() (string, string, error) {
 }
 
 func fetchQuote(maxLength int) (string, string, error) {
-	resp, err := http.Get("https://raw.githubusercontent.com/quotable-io/data/v0.3.5/data/quotes.json")
+	b, err := quotes.ReadFile("quotes.json")
 	if err != nil {
 		return "", "", err
 	}
-	defer resp.Body.Close()
 
 	type Quote struct {
 		Content string `json:"content"`
@@ -150,7 +153,7 @@ func fetchQuote(maxLength int) (string, string, error) {
 	}
 
 	r := []Quote{}
-	if err := json.NewDecoder(resp.Body).Decode(&r); err != nil {
+	if err := json.Unmarshal(b, &r); err != nil {
 		return "", "", err
 	}
 
@@ -169,5 +172,5 @@ func fetchQuote(maxLength int) (string, string, error) {
 		}
 	}
 
-	return "", "", fmt.Errorf("Could not find quote with length less than %d", maxLength)
+	return "", "", fmt.Errorf("could not find quote with length less than %d", maxLength)
 }
