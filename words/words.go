@@ -1,3 +1,7 @@
+// Package words provides a way to get words and quotes.
+//
+// The quotes are fetched from a local file, while the words
+// are fetched from an external API.
 package words
 
 import (

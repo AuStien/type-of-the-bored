@@ -1,3 +1,4 @@
+// Package terminal provides functions relating to the terminal.
 package terminal
 
 import "golang.org/x/term"

@@ -1,3 +1,4 @@
+// Package ansi provides ANSI escape codes.
 package ansi
 
 type CODE struct {
