@@ -188,7 +188,6 @@ func interact() templ.ComponentScript {
   }
 
   function onChange(e) {
-    console.log(e.key)
     if (event.key === "Enter" && isAllCorrect) {
       next()
     }
