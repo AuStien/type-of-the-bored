@@ -36,7 +36,7 @@ func Text(letters []string, author string) templ.Component {
     }
 
     .incorrect-space {
-      background-color: red;
+      text-decoration: underline;
     }
 
     #active {
