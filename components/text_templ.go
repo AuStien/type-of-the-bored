@@ -178,8 +178,8 @@ func Text(letters []string, author string) templ.Component {
 
 func interact() templ.ComponentScript {
 	return templ.ComponentScript{
-		Name: `__templ_interact_3517`,
-		Function: `function __templ_interact_3517(){const textParagraph = document.getElementById("text-paragraph");
+		Name: `__templ_interact_daf0`,
+		Function: `function __templ_interact_daf0(){const textParagraph = document.getElementById("text-paragraph");
   const letters = textParagraph.getElementsByClassName("letter");
 
   let hasStarted = false;
@@ -218,6 +218,11 @@ func interact() templ.ComponentScript {
     }
 
     if (e.key === "Backspace") {
+      if (i === letters.length - 1) {
+        letters[i].classList.remove("correct");
+        letters[i].classList.remove("incorrect");
+        letters[i].classList.remove("incorrect-space");
+      }
       if (i > 0 ) {
         letters[i - 1].classList.remove("correct");
         letters[i - 1].classList.remove("incorrect");
@@ -251,6 +256,9 @@ func interact() templ.ComponentScript {
       if (i < letters.length - 1) {
         currentLetter.id = "";
         letters[i + 1].id = "active";
+      } else {
+        letters[i].classList.remove("incorrect");
+        letters[i].classList.remove("incorrect-space");
       }
 
       if (e.key === " ") {
@@ -264,6 +272,8 @@ func interact() templ.ComponentScript {
       if (i < letters.length - 1) {
         currentLetter.id = "";
         letters[i + 1].id = "active";
+      } else {
+        letters[i].classList.remove("correct");
       }
       if (e.key === " ") {
         wordsTyped--;
@@ -288,7 +298,7 @@ func interact() templ.ComponentScript {
       }
     }
   }}`,
-		Call: templ.SafeScript(`__templ_interact_3517`),
+		Call: templ.SafeScript(`__templ_interact_daf0`),
 	}
 }
 

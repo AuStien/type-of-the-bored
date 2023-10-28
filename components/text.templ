@@ -85,6 +85,11 @@ script interact() {
     }
 
     if (e.key === "Backspace") {
+      if (i === letters.length - 1) {
+        letters[i].classList.remove("correct");
+        letters[i].classList.remove("incorrect");
+        letters[i].classList.remove("incorrect-space");
+      }
       if (i > 0 ) {
         letters[i - 1].classList.remove("correct");
         letters[i - 1].classList.remove("incorrect");
@@ -118,6 +123,9 @@ script interact() {
       if (i < letters.length - 1) {
         currentLetter.id = "";
         letters[i + 1].id = "active";
+      } else {
+        letters[i].classList.remove("incorrect");
+        letters[i].classList.remove("incorrect-space");
       }
 
       if (e.key === " ") {
@@ -131,6 +139,8 @@ script interact() {
       if (i < letters.length - 1) {
         currentLetter.id = "";
         letters[i + 1].id = "active";
+      } else {
+        letters[i].classList.remove("correct");
       }
       if (e.key === " ") {
         wordsTyped--;
