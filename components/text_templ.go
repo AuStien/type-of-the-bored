@@ -27,6 +27,10 @@ func Text(letters []string, author string) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Var2 := `
+    .letter {
+      white-space: pre-wrap;
+    }
+
     .correct {
       color: green;
     }
