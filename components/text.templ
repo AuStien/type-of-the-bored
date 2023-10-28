@@ -1,0 +1,162 @@
+package components
+
+templ Text(letters []string, author string) {
+	<style>
+    .correct {
+      color: green;
+    }
+
+    .incorrect {
+      color: red;
+    }
+
+    .incorrect-space {
+      background-color: red;
+    }
+
+    #active {
+      text-decoration: underline;
+    }
+  </style>
+	<script>
+  function next() {
+    htmx.trigger("#text-container", "manual")
+  }
+  </script>
+	<div class="text">
+		<p>WPM: <span id="wpm">0</span></p>
+		<p id="text-paragraph">
+			for i, letter := range letters {
+				if i == 0 {
+					<span class="letter" id="active">{ letter }</span>
+				} else {
+					<span class="letter">{ letter }</span>
+				}
+			}
+		</p>
+		<p>- { author }</p>
+		<div on={ interact() }></div>
+		@onLoad(interact())
+	</div>
+}
+
+script interact() {
+  const textParagraph = document.getElementById("text-paragraph");
+  const letters = textParagraph.getElementsByClassName("letter");
+
+  let hasStarted = false;
+  let startTime = undefined;
+  let wordsTyped = 0;
+  let isAllCorrect = false;
+  let intervalID = undefined;
+
+  addEventListener("keydown", onChange);
+
+  function startInterval() {
+    return setInterval(() => {
+      if (hasStarted) {
+        const time = Date.now() - startTime;
+        const wpm = Math.round(wordsTyped / (time / 1000 / 60));
+        document.getElementById("wpm").innerText = wpm;
+      }
+    }, 500);
+  }
+
+  function onChange(e) {
+    console.log(e.key)
+    if (event.key === "Enter" && isAllCorrect) {
+      next()
+    }
+    if ((event.key.length != 1 && event.key != "Backspace") || isAllCorrect) {
+      return
+    }
+
+    // Get index of active letter
+    let i = 0;
+    for (const letter of letters) {
+      if (letter.id === "active") {
+        break;
+      }
+      i++
+    }
+
+    if (e.key === "Backspace") {
+      if (i > 0 ) {
+        letters[i - 1].classList.remove("correct");
+        letters[i - 1].classList.remove("incorrect");
+        letters[i - 1].classList.remove("incorrect-space");
+        letters[i].id = "";
+        letters[i - 1].id = "active";
+        if (letters[i].innerText === " ") {
+          wordsTyped--;
+        }
+      }
+      if (i === 1 ) {
+        clearInterval(intervalID);
+        hasStarted = false;
+        startTime = undefined;
+        wordsTyped = 0;
+        document.getElementById("wpm").innerText = "0";
+      }
+      return
+    }
+
+    if (!hasStarted) {
+      hasStarted = true;
+      startTime = Date.now();
+      intervalID = startInterval();
+    }
+
+    // Handle current letter
+    const currentLetter = letters[i];
+    if (e.key === currentLetter.innerText) {
+      currentLetter.classList.add("correct");
+      if (i < letters.length - 1) {
+        currentLetter.id = "";
+        letters[i + 1].id = "active";
+      }
+
+      if (e.key === " ") {
+        wordsTyped++;
+      }
+    } else {
+      currentLetter.classList.add("incorrect");
+      if (currentLetter.innerText === " ") {
+      currentLetter.classList.add("incorrect-space");  
+      }
+      if (i < letters.length - 1) {
+        currentLetter.id = "";
+        letters[i + 1].id = "active";
+      }
+      if (e.key === " ") {
+        wordsTyped--;
+      }
+      return
+    }
+
+    // If on last letter, check if game is won
+    if (i === letters.length - 1) {
+      let checkAllCorrect = true;
+      for (const l of letters) {
+        if (!l.classList.contains("correct")) {
+          checkAllCorrect = false;
+          break;
+        }
+      }
+
+      if (checkAllCorrect) {
+        isAllCorrect = true;
+        clearInterval(intervalID);
+      }
+    }
+  }
+}
+
+func onLoad(script templ.ComponentScript) templ.Component {
+	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
+		if _, err = io.WriteString(w, `<script type="text/javascript">`+"\r\n"+script.Call+"\r\n</script>"); err != nil {
+			return err
+		}
+		return nil
+	})
+}

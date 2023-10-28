@@ -1,0 +1,48 @@
+package components
+
+templ Page() {
+	<html>
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>Type of the Bored</title>
+			<script src="/assets/js/htmx.min.js"></script>
+			<style type="text/css">       
+        body {
+          background-color: #282c34;
+          color: rgb(250, 230, 185);
+          font-family: 'Times New Roman', serif;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: start;
+          gap: 10vh;
+        }
+
+        header {
+          text-align: center;
+          padding: 1rem;
+        }
+
+        .title {
+          font-size: 8rem;
+        }
+
+        .section {
+          font-size: 1.5rem;
+          max-width: 70vw;
+        }
+      </style>
+		</head>
+		<body>
+			<header>
+				<div>
+					<h1 class="title">Type of the Bored</h1>
+				</div>
+			</header>
+			<section class="section">
+				<div id="text-container" class="text-container" hx-get="/text" hx-trigger="load, manual"></div>
+			</section>
+		</body>
+	</html>
+}
