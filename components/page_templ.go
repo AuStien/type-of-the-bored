@@ -67,7 +67,7 @@ func Page() templ.Component {
 
         .section {
           font-size: 1.5rem;
-          max-width: 70vw;
+          width: 50rem;
         }
       `
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
