@@ -183,8 +183,8 @@ func Text(letters []string, author string) templ.Component {
 
 func interact() templ.ComponentScript {
 	return templ.ComponentScript{
-		Name: `__templ_interact_daf0`,
-		Function: `function __templ_interact_daf0(){const textParagraph = document.getElementById("text-paragraph");
+		Name: `__templ_interact_a39f`,
+		Function: `function __templ_interact_a39f(){const textParagraph = document.getElementById("text-paragraph");
   const letters = textParagraph.getElementsByClassName("letter");
 
   let hasStarted = false;
@@ -266,7 +266,7 @@ func interact() templ.ComponentScript {
         letters[i].classList.remove("incorrect-space");
       }
 
-      if (e.key === " ") {
+      if (e.key === " " || e.key === ".") {
         wordsTyped++;
       }
     } else {
@@ -279,9 +279,6 @@ func interact() templ.ComponentScript {
         letters[i + 1].id = "active";
       } else {
         letters[i].classList.remove("correct");
-      }
-      if (e.key === " ") {
-        wordsTyped--;
       }
       return
     }
@@ -299,11 +296,14 @@ func interact() templ.ComponentScript {
       if (checkAllCorrect) {
         isAllCorrect = true;
         clearInterval(intervalID);
+        const time = Date.now() - startTime;
+        const wpm = Math.round(wordsTyped / (time / 1000 / 60));
+        document.getElementById("wpm").innerText = wpm;
         document.getElementById("success-message").classList.remove("hidden");
       }
     }
   }}`,
-		Call: templ.SafeScript(`__templ_interact_daf0`),
+		Call: templ.SafeScript(`__templ_interact_a39f`),
 	}
 }
 
