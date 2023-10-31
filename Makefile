@@ -55,7 +55,7 @@ run-server: fmt fmt-templ vet generate gow ## Run the server.
 	go run ./cmd/server/main.go
 
 watch-server: fmt fmt-templ vet generate gow ## Run the server, and watch for changes.
-	$(GOW) run ./cmd/server/main.go
+	$(GOW) -e go,mod,js run ./cmd/server/main.go
 
 run-cli: fmt vet ## Run the CLI.
 	go run ./cmd/cli/main.go
