@@ -1,4 +1,3 @@
-const textParagraph = document.getElementById("text-paragraph");
 const letters = document.getElementsByClassName("letter");
 
 let hasStarted = false;
@@ -24,9 +23,9 @@ function reset() {
 function startInterval() {
   return setInterval(() => {
     if (hasStarted) {
-      const time = Date.now() - startTime;
-      const wpm = Math.round(wordsTyped / (time / 1000 / 60));
-      document.getElementById("wpm").innerText = wpm;
+      const textParagraph = document.getElementById("text-paragraph");
+      const i = getActiveLetterIndex();
+      updateWPM(textParagraph.innerText.slice(0, i), startTime);
     }
   }, 500);
 }
@@ -40,13 +39,7 @@ function onChange(e) {
   }
 
   // Get index of active letter
-  let i = 0;
-  for (const letter of letters) {
-    if (letter.id === "active") {
-      break;
-    }
-    i++;
-  }
+  const i = getActiveLetterIndex();
 
   if (e.key === "Backspace") {
     if (i === letters.length - 1) {
@@ -122,10 +115,32 @@ function onChange(e) {
     if (checkAllCorrect) {
       isAllCorrect = true;
       clearInterval(intervalID);
-      const time = Date.now() - startTime;
-      const wpm = Math.round(wordsTyped / (time / 1000 / 60));
-      document.getElementById("wpm").innerText = wpm;
+      updateWPM(
+        document.getElementById("text-paragraph").innerText,
+        startTime,
+        true
+      );
       document.getElementById("success-message").classList.remove("hidden");
     }
   }
+}
+
+function getActiveLetterIndex() {
+  let i = 0;
+  for (const letter of letters) {
+    if (letter.id === "active") {
+      break;
+    }
+    i++;
+  }
+  return i;
+}
+
+function updateWPM(text, startTime, isDone = false) {
+  const words = text.split(" ");
+  // Until last word is typed, the length will be one too long, so subtract it.
+  const wordsLength = isDone ? words.length : words.length - 1;
+  const time = Date.now() - startTime;
+  const wpm = Math.round(wordsLength / (time / 1000 / 60));
+  document.getElementById("wpm").innerText = wpm;
 }
