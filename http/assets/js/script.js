@@ -1,5 +1,3 @@
-const letters = document.getElementsByClassName("letter");
-
 let hasStarted = false;
 let startTime = undefined;
 let wordsTyped = 0;
@@ -31,6 +29,11 @@ function startInterval() {
 }
 
 function onChange(e) {
+  if (!document.getElementById("text-paragraph")) {
+    return;
+  }
+  const letters = document.getElementsByClassName("letter");
+
   if (e.key === "Enter" && isAllCorrect) {
     next();
   }
@@ -126,6 +129,7 @@ function onChange(e) {
 }
 
 function getActiveLetterIndex() {
+  const letters = document.getElementsByClassName("letter");
   let i = 0;
   for (const letter of letters) {
     if (letter.id === "active") {

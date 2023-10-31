@@ -1,6 +1,6 @@
 package components
 
-templ Page() {
+templ Page(child templ.Component) {
 	<html>
 		<head>
 			<meta charset="UTF-8"/>
@@ -20,6 +20,10 @@ templ Page() {
           gap: 10vh;
         }
 
+        a {
+          text-decoration: none;
+        }
+
         header {
           text-align: center;
           padding: 1rem;
@@ -27,23 +31,76 @@ templ Page() {
 
         .title {
           font-size: 8rem;
+          color: rgb(250, 230, 185);
         }
 
         .section {
           font-size: 1.5rem;
           width: 50rem;
         }
+
+        footer {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          padding: 1rem;
+        }
+
+        #create-room-button {
+          box-shadow: 0 0 0.1rem 0.1rem rgba(250, 230, 185, 0.2);
+          border-radius: 0.5rem;
+          padding: 0.5rem;
+          cursor: pointer;
+          margin: 0;
+        }
+
+        #create-room-button:hover {
+          background-color: rgba(250, 230, 185, 0.2);
+        } 
       </style>
 		</head>
 		<body>
 			<header>
 				<div>
-					<h1 class="title">Type of the Bored</h1>
+					<a href="/"><h1 class="title">Type of the Bored</h1></a>
 				</div>
 			</header>
-			<section class="section">
-				@Text()
+			<section id="root" class="section">
+        {! child }
 			</section>
+      <footer>
+        <div>
+          <p id="create-room-button" hx-post="/v1/room" hx-target="#root">Create room</p>
+        </div>
+      </footer>
 		</body>
 	</html>
+}
+
+templ Error(msg string) {
+  <style>
+    #error-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    #goofy {
+      height: 20rem;
+    }
+
+    #error-container > p {
+      margin: 0.5rem;
+    }
+
+    #error-message {
+      color: red;
+    }
+  </style>
+  <div id="error-container">
+    <image id="goofy" alt="goofy" src="/assets/images/goofy.png" />
+    <h2>Ya dun goofed</h2>
+    <p id="error-message">{ msg }</p>
+    <p>Go <a href="/">home</a></p>
+  </div>
 }

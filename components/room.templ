@@ -1,0 +1,41 @@
+package components
+
+import "fmt"
+
+templ EnteringRoom(ID string) {
+  <style>
+  button[type=submit] {
+    box-shadow: 0 0 0.1rem 0.1rem rgba(250, 230, 185, 0.2);
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    cursor: pointer;
+    margin: 0;
+    background-color: #282c34;
+    border: none; /* Remove borders */
+    color: rgb(250, 230, 185);
+    text-align: center; /* Centered text */
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  /* Change the background color and add a shadow on hover */
+  button[type=submit]:hover {
+    background-color: rgba(250, 230, 185, 0.2);
+  }
+  </style>
+  <div id="room-root">
+    <h1>Entering room { ID }</h1>
+    <form>
+      <label for="username">Username</label>
+      <input type="text" name="username" placeholder="Username" />
+      <button type="submit" hx-target="#room-root" hx-post={fmt.Sprintf("/room/%s", ID)}>Join Room</button>
+    </form>
+  </div>
+}
+
+templ RoomAsUser(ID string, username string) {
+  <div id="room-root">
+    <h1>Welcome to room { ID }, { username }!</h1>
+    @Text()
+  </div>
+}

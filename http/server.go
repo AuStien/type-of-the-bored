@@ -2,7 +2,7 @@ package http
 
 import (
 	"embed"
-	"log/slog"
+	"fmt"
 	"net/http"
 
 	"github.com/a-h/templ"
@@ -10,7 +10,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 
 	"github.com/austien/type-of-the-bored/components"
-	"github.com/austien/type-of-the-bored/words"
+	v1 "github.com/austien/type-of-the-bored/http/v1"
 )
 
 //go:embed assets
@@ -20,30 +20,35 @@ func ListenAndServe(addr string) error {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 
-	r.Handle("/", templ.Handler(components.Page()))
-	r.HandleFunc("/text", func(w http.ResponseWriter, r *http.Request) {
-		text, err := words.NewText(false, -1)
-		if err != nil {
-			slog.Error("failed to generate text", "err", err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+	r.Handle("/", templ.Handler(components.Page(components.Text())))
+	r.HandleFunc("/text", v1.TextComponentGet())
+	r.Route("/room", func(r chi.Router) {
+		r.Get("/{roomID}", v1.RoomComponentGet())
+		r.Post("/{roomID}", v1.RoomComponentPost())
+	})
 
-		var letters []string
-		for _, l := range text.Word {
-			letters = append(letters, string(l))
-		}
-
-		c := components.TextBox(letters, text.Description)
-		if err := c.Render(r.Context(), w); err != nil {
-			slog.Error("failed to render text", "err", err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+	r.Route("/v1", func(r chi.Router) {
+		r.Post("/room", v1.CreateRoom())
+		r.Get("/rooms", v1.GetRooms())
 	})
 
 	// Serve static assets
 	r.Handle("/assets/*", http.FileServer(http.FS(assets)))
+
+	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
+		msg := fmt.Sprintf("page %q doesn't exist, yo", r.URL.Path)
+
+		var c templ.Component
+		if r.Header.Get("HX-Request") == "true" {
+			c = components.Error(msg)
+		} else {
+			c = components.Page(components.Error(msg))
+		}
+		if err := c.Render(r.Context(), w); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	})
 
 	return http.ListenAndServe(addr, r)
 }
