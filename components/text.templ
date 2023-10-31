@@ -26,24 +26,23 @@ templ Text() {
       display: none;
     }
   </style>
-	<div id="text-container" class="text-container" hx-get="/text" hx-trigger="load, manual">		
-	</div>
+	<div id="text-container" class="text-container" hx-get="/text" hx-trigger="load, manual"></div>
 }
 
 templ TextBox(letters []string, author string) {
-  <script>
+	<script>
     reset();
   </script>
-  <p>WPM: <span id="wpm">0</span></p>
-  <p id="text-paragraph">
-    for i, letter := range letters {
-      if i == 0 {
-        <span class="letter" id="active">{ letter }</span>
-      } else {
-        <span class="letter">{ letter }</span>
-      }
-    }
-  </p>
-  <p>- { author }</p>
-  <p id="success-message" class="hidden">All done! Press Enter to get next quote.</p>
+	<p>WPM: <span id="wpm">0</span></p>
+	<p id="text-paragraph">
+		for i, letter := range letters {
+			if i == 0 {
+				<span class="letter" id="active">{ letter }</span>
+			} else {
+				<span class="letter">{ letter }</span>
+			}
+		}
+	</p>
+	<p>- { author }</p>
+	<p id="success-message" class="hidden">All done! Press Enter to get next quote.</p>
 }
