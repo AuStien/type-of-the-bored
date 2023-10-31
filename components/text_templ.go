@@ -9,7 +9,7 @@ import "context"
 import "io"
 import "bytes"
 
-func Text(letters []string, author string) templ.Component {
+func Text() templ.Component {
 	return templ.ComponentFunc(func(templ_7745c5c3_Ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -55,25 +55,47 @@ func Text(letters []string, author string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</style><script>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</style><div id=\"text-container\" class=\"text-container\" hx-get=\"/text\" hx-trigger=\"load, manual\"></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Var3 := `
-  function next() {
-    htmx.trigger("#text-container", "manual")
-  }
+		if !templ_7745c5c3_IsBuffer {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteTo(templ_7745c5c3_W)
+		}
+		return templ_7745c5c3_Err
+	})
+}
+
+func TextBox(letters []string, author string) templ.Component {
+	return templ.ComponentFunc(func(templ_7745c5c3_Ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
+		if !templ_7745c5c3_IsBuffer {
+			templ_7745c5c3_Buffer = templ.GetBuffer()
+			defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
+		}
+		templ_7745c5c3_Ctx = templ.InitializeContext(templ_7745c5c3_Ctx)
+		templ_7745c5c3_Var3 := templ.GetChildren(templ_7745c5c3_Ctx)
+		if templ_7745c5c3_Var3 == nil {
+			templ_7745c5c3_Var3 = templ.NopComponent
+		}
+		templ_7745c5c3_Ctx = templ.ClearChildren(templ_7745c5c3_Ctx)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<script>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Var4 := `
+    reset();
   `
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</script><div class=\"text\"><p>")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Var4 := `WPM: `
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</script><p>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Var5 := `WPM: `
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var5)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -81,8 +103,8 @@ func Text(letters []string, author string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Var5 := `0`
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var5)
+		templ_7745c5c3_Var6 := `0`
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var6)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -96,8 +118,8 @@ func Text(letters []string, author string) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var6 string = letter
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
+				var templ_7745c5c3_Var7 string = letter
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -110,8 +132,8 @@ func Text(letters []string, author string) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var7 string = letter
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+				var templ_7745c5c3_Var8 string = letter
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -125,13 +147,13 @@ func Text(letters []string, author string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Var8 := `- `
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var8)
+		templ_7745c5c3_Var9 := `- `
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var9)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var9 string = author
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
+		var templ_7745c5c3_Var10 string = author
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -139,8 +161,8 @@ func Text(letters []string, author string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Var10 := `All done! Press Enter to get next quote.`
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var10)
+		templ_7745c5c3_Var11 := `All done! Press Enter to get next quote.`
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var11)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -148,169 +170,9 @@ func Text(letters []string, author string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templ.RenderScriptItems(templ_7745c5c3_Ctx, templ_7745c5c3_Buffer, interact())
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div on=\"")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var11 templ.ComponentScript = interact()
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var11.Call)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"></div>")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = onLoad(interact()).Render(templ_7745c5c3_Ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div>")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
 		if !templ_7745c5c3_IsBuffer {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteTo(templ_7745c5c3_W)
 		}
 		return templ_7745c5c3_Err
-	})
-}
-
-func interact() templ.ComponentScript {
-	return templ.ComponentScript{
-		Name: `__templ_interact_a39f`,
-		Function: `function __templ_interact_a39f(){const textParagraph = document.getElementById("text-paragraph");
-  const letters = textParagraph.getElementsByClassName("letter");
-
-  let hasStarted = false;
-  let startTime = undefined;
-  let wordsTyped = 0;
-  let isAllCorrect = false;
-  let intervalID = undefined;
-
-  addEventListener("keydown", onChange);
-
-  function startInterval() {
-    return setInterval(() => {
-      if (hasStarted) {
-        const time = Date.now() - startTime;
-        const wpm = Math.round(wordsTyped / (time / 1000 / 60));
-        document.getElementById("wpm").innerText = wpm;
-      }
-    }, 500);
-  }
-
-  function onChange(e) {
-    if (event.key === "Enter" && isAllCorrect) {
-      next()
-    }
-    if ((event.key.length != 1 && event.key != "Backspace") || isAllCorrect) {
-      return
-    }
-
-    // Get index of active letter
-    let i = 0;
-    for (const letter of letters) {
-      if (letter.id === "active") {
-        break;
-      }
-      i++
-    }
-
-    if (e.key === "Backspace") {
-      if (i === letters.length - 1) {
-        letters[i].classList.remove("correct");
-        letters[i].classList.remove("incorrect");
-        letters[i].classList.remove("incorrect-space");
-      }
-      if (i > 0 ) {
-        letters[i - 1].classList.remove("correct");
-        letters[i - 1].classList.remove("incorrect");
-        letters[i - 1].classList.remove("incorrect-space");
-        letters[i].id = "";
-        letters[i - 1].id = "active";
-        if (letters[i].innerText === " ") {
-          wordsTyped--;
-        }
-      }
-      if (i === 1 ) {
-        clearInterval(intervalID);
-        hasStarted = false;
-        startTime = undefined;
-        wordsTyped = 0;
-        document.getElementById("wpm").innerText = "0";
-      }
-      return
-    }
-
-    if (!hasStarted) {
-      hasStarted = true;
-      startTime = Date.now();
-      intervalID = startInterval();
-    }
-
-    // Handle current letter
-    const currentLetter = letters[i];
-    if (e.key === currentLetter.innerText) {
-      currentLetter.classList.add("correct");
-      if (i < letters.length - 1) {
-        currentLetter.id = "";
-        letters[i + 1].id = "active";
-      } else {
-        letters[i].classList.remove("incorrect");
-        letters[i].classList.remove("incorrect-space");
-      }
-
-      if (e.key === " " || e.key === ".") {
-        wordsTyped++;
-      }
-    } else {
-      currentLetter.classList.add("incorrect");
-      if (currentLetter.innerText === " ") {
-      currentLetter.classList.add("incorrect-space");  
-      }
-      if (i < letters.length - 1) {
-        currentLetter.id = "";
-        letters[i + 1].id = "active";
-      } else {
-        letters[i].classList.remove("correct");
-      }
-      return
-    }
-
-    // If on last letter, check if game is won
-    if (i === letters.length - 1) {
-      let checkAllCorrect = true;
-      for (const l of letters) {
-        if (!l.classList.contains("correct")) {
-          checkAllCorrect = false;
-          break;
-        }
-      }
-
-      if (checkAllCorrect) {
-        isAllCorrect = true;
-        clearInterval(intervalID);
-        const time = Date.now() - startTime;
-        const wpm = Math.round(wordsTyped / (time / 1000 / 60));
-        document.getElementById("wpm").innerText = wpm;
-        document.getElementById("success-message").classList.remove("hidden");
-      }
-    }
-  }}`,
-		Call: templ.SafeScript(`__templ_interact_a39f`),
-	}
-}
-
-func onLoad(script templ.ComponentScript) templ.Component {
-	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) (err error) {
-		if _, err = io.WriteString(w, `<script type="text/javascript">`+"\r\n"+script.Call+"\r\n</script>"); err != nil {
-			return err
-		}
-		return nil
 	})
 }

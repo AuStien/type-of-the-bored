@@ -34,7 +34,7 @@ func ListenAndServe(addr string) error {
 			letters = append(letters, string(l))
 		}
 
-		c := components.Text(letters, text.Description)
+		c := components.TextBox(letters, text.Description)
 		if err := c.Render(r.Context(), w); err != nil {
 			slog.Error("failed to render text", "err", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
