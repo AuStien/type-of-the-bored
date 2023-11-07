@@ -9,9 +9,9 @@ import (
 	"github.com/austien/type-of-the-bored/rooms"
 )
 
-func CreateRoom() http.HandlerFunc {
+func CreateRoom(roomClient rooms.RoomClient) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		room, err := rooms.NewRoom()
+		room, err := roomClient.CreateRoom()
 		if err != nil {
 			slog.Error("failed to create room", "err", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -25,13 +25,13 @@ func CreateRoom() http.HandlerFunc {
 	}
 }
 
-func GetRooms() http.HandlerFunc {
+func GetRooms(roomClient rooms.RoomClient) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		type response struct {
 			Rooms []*rooms.Room `json:"rooms"`
 		}
 
-		currRooms := rooms.Rooms
+		currRooms := roomClient.GetRooms()
 		if currRooms == nil {
 			currRooms = []*rooms.Room{}
 		}

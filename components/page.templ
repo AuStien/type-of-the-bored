@@ -66,19 +66,19 @@ templ Page(child templ.Component) {
 				</div>
 			</header>
 			<section id="root" class="section">
-        {! child }
+				{! child }
 			</section>
-      <footer>
-        <div>
-          <p id="create-room-button" hx-post="/v1/room" hx-target="#root">Create room</p>
-        </div>
-      </footer>
+			<footer>
+				<div>
+					<p id="create-room-button" hx-post="/v1/room" hx-target="#root">Create room</p>
+				</div>
+			</footer>
 		</body>
 	</html>
 }
 
 templ Error(msg string) {
-  <style>
+	<style>
     #error-container {
       display: flex;
       flex-direction: column;
@@ -97,10 +97,10 @@ templ Error(msg string) {
       color: red;
     }
   </style>
-  <div id="error-container">
-    <image id="goofy" alt="goofy" src="/assets/images/goofy.png" />
-    <h2>Ya dun goofed</h2>
-    <p id="error-message">{ msg }</p>
-    <p>Go <a href="/">home</a></p>
-  </div>
+	<div id="error-container">
+		<image id="goofy" alt="goofy" src="/assets/images/goofy.png"></image>
+		<h2>Ya dun goofed</h2>
+		<p id="error-message">{ msg }</p>
+		<p>Go <a href="/">home</a></p>
+	</div>
 }

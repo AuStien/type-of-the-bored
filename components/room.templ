@@ -3,7 +3,7 @@ package components
 import "fmt"
 
 templ EnteringRoom(ID string) {
-  <style>
+	<style>
   button[type=submit] {
     box-shadow: 0 0 0.1rem 0.1rem rgba(250, 230, 185, 0.2);
     border-radius: 0.5rem;
@@ -23,19 +23,23 @@ templ EnteringRoom(ID string) {
     background-color: rgba(250, 230, 185, 0.2);
   }
   </style>
-  <div id="room-root">
-    <h1>Entering room { ID }</h1>
-    <form>
-      <label for="username">Username</label>
-      <input type="text" name="username" placeholder="Username" />
-      <button type="submit" hx-target="#room-root" hx-post={fmt.Sprintf("/room/%s", ID)}>Join Room</button>
-    </form>
-  </div>
+	<div id="room-root">
+		<h1>Entering room { ID }</h1>
+		<form>
+			<label for="username">Username</label>
+			<input type="text" name="username" placeholder="Username"/>
+			<button type="submit" hx-target="#room-root" hx-post={ fmt.Sprintf("/room/%s", ID) }>Join Room</button>
+		</form>
+	</div>
 }
 
-templ RoomAsUser(ID string, username string) {
-  <div id="room-root">
-    <h1>Welcome to room { ID }, { username }!</h1>
-    @Text()
+templ RoomAsUser(ID string, username string, hasStarted bool) {
+	<div id="room-root">
+		<h1>Welcome to room { ID }, { username }!</h1>
+		if hasStarted {
+      @Text()
+    } else {
+      <button hx-get={ fmt.Sprintf("/room/%s/start", ID) } hx-target="#room-root" hx-headers={ fmt.Sprintf("{\"user\": %q}", username) } >Start Game</button>
+    }
   </div>
 }

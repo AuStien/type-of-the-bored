@@ -35,7 +35,7 @@ func TextComponentGet() http.HandlerFunc {
 	}
 }
 
-func RoomComponentGet() http.HandlerFunc {
+func RoomComponentGet(roomClient rooms.RoomClient) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		isHTMX := r.Header.Get("HX-Request") == "true"
 		roomID := chi.URLParam(r, "roomID")
@@ -44,7 +44,7 @@ func RoomComponentGet() http.HandlerFunc {
 			return
 		}
 
-		if _, err := rooms.GetRoom(roomID); err != nil {
+		if _, err := roomClient.GetRoom(roomID); err != nil {
 			component := pageOrChild(isHTMX, components.Error(err.Error()))
 			if err := component.Render(r.Context(), w); err != nil {
 				slog.Error("failed to render error", "err", err)
@@ -63,7 +63,7 @@ func RoomComponentGet() http.HandlerFunc {
 	}
 }
 
-func RoomComponentPost() http.HandlerFunc {
+func RoomComponentPost(roomClient rooms.RoomClient) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		isHTMX := r.Header.Get("HX-Request") == "true"
 		roomID := chi.URLParam(r, "roomID")
@@ -72,7 +72,8 @@ func RoomComponentPost() http.HandlerFunc {
 			return
 		}
 
-		if _, err := rooms.GetRoom(roomID); err != nil {
+		room, err := roomClient.GetRoom(roomID)
+		if err != nil {
 			components := pageOrChild(isHTMX, components.Error(err.Error()))
 			if err := components.Render(r.Context(), w); err != nil {
 				slog.Error("failed to render error", "err", err)
@@ -94,13 +95,49 @@ func RoomComponentPost() http.HandlerFunc {
 			http.Error(w, "missing username", http.StatusBadRequest)
 		}
 
-		if err := rooms.Rooms.AddPlayer(roomID, username); err != nil {
+		if err := roomClient.JoinRoom(roomID, username); err != nil {
 			slog.Error("failed to add player", "err", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		component := pageOrChild(isHTMX, components.RoomAsUser(roomID, username))
+		component := pageOrChild(isHTMX, components.RoomAsUser(roomID, username, room.HasStarted))
+		if err := component.Render(r.Context(), w); err != nil {
+			slog.Error("failed to render room", "err", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+}
+
+func RoomComponentStart(roomClient rooms.RoomClient) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		isHTMX := r.Header.Get("HX-Request") == "true"
+		username := r.Header.Get("user")
+		roomID := chi.URLParam(r, "roomID")
+		if roomID == "" {
+			http.Error(w, "missing room ID", http.StatusBadRequest)
+			return
+		}
+
+		room, err := roomClient.GetRoom(roomID)
+		if err != nil {
+			components := pageOrChild(isHTMX, components.Error(err.Error()))
+			if err := components.Render(r.Context(), w); err != nil {
+				slog.Error("failed to render error", "err", err)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			return
+		}
+
+		if err := roomClient.StartRoom(roomID); err != nil {
+			slog.Error("failed to start room", "err", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		component := pageOrChild(isHTMX, components.RoomAsUser(roomID, username, room.HasStarted))
 		if err := component.Render(r.Context(), w); err != nil {
 			slog.Error("failed to render room", "err", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)

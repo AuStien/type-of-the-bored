@@ -11,25 +11,29 @@ import (
 
 	"github.com/austien/type-of-the-bored/components"
 	v1 "github.com/austien/type-of-the-bored/http/v1"
+	"github.com/austien/type-of-the-bored/rooms"
 )
 
 //go:embed assets
 var assets embed.FS
 
-func ListenAndServe(addr string) error {
+func ListenAndServe(addr string, roomClient rooms.RoomClient) error {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 
 	r.Handle("/", templ.Handler(components.Page(components.Text())))
 	r.HandleFunc("/text", v1.TextComponentGet())
 	r.Route("/room", func(r chi.Router) {
-		r.Get("/{roomID}", v1.RoomComponentGet())
-		r.Post("/{roomID}", v1.RoomComponentPost())
+		r.Route("/{roomID}", func(r chi.Router) {
+			r.Get("/", v1.RoomComponentGet(roomClient))
+			r.Post("/", v1.RoomComponentPost(roomClient))
+			r.Get("/start", v1.RoomComponentStart(roomClient))
+		})
 	})
 
 	r.Route("/v1", func(r chi.Router) {
-		r.Post("/room", v1.CreateRoom())
-		r.Get("/rooms", v1.GetRooms())
+		r.Post("/room", v1.CreateRoom(roomClient))
+		r.Get("/rooms", v1.GetRooms(roomClient))
 	})
 
 	// Serve static assets
