@@ -26,58 +26,17 @@ help: ## Display this help.
 fmt: ## Format the Go and templ files.
 	go fmt ./...
 
-fmt-templ: templ ## Format the templ files.
-	$(TEMPL) fmt .
-
 vet: ## Run go vet against code.
 	go vet ./...
 
 test: ## Test the Go code.
 	go test ./...
 
-generate: templ ## Generate Go files based on .templ files.
-	$(TEMPL) generate
-
-generate-watch: templ ## Generate Go files based on .templ files, and watch for changes.
-	$(TEMPL) generate --watch
-
 ##@ Build
 
-build: build-server build-cli ## Build the binaries for the server and CLI.
-
-build-server: fmt fmt-templ vet generate ## Build the server binary.
-	go build -o ./bin/server ./cmd/server/main.go
-
-build-cli: fmt vet generate ## Build the CLI binary.
+build: fmt vet generate ## Build the CLI binary.
 	go build -o ./bin/totb ./cmd/totb/main.go
 
-run-server: fmt fmt-templ vet generate gow ## Run the server.
-	go run ./cmd/server/main.go
-
-watch-server: fmt fmt-templ vet generate gow ## Run the server, and watch for changes.
-	$(GOW) -e go,mod,js run ./cmd/server/main.go
-
-run-cli: fmt vet ## Run the CLI.
+run: fmt vet ## Run the CLI.
 	go run ./cmd/totb/main.go
 
-
-##@ Build Dependencies
-
-## Location to install dependencies to
-LOCALBIN ?= $(shell pwd)/bin
-$(LOCALBIN):
-	mkdir -p $(LOCALBIN)
-
-## Tool binaries
-TEMPL ?= $(LOCALBIN)/templ
-GOW ?= $(LOCALBIN)/gow
-
-.PHONY: templ
-templ: $(TEMPL) ## Download templ locally if necessary.
-$(TEMPL): $(LOCALBIN)
-	test -s $(LOCALBIN)/templ || GOBIN=$(LOCALBIN) go install github.com/a-h/templ/cmd/templ@latest
-
-.PHONY: gow
-gow: $(GOW) ## Download gow locally if necessary.
-$(GOW): $(LOCALBIN)
-	test -s $(LOCALBIN)/gow || GOBIN=$(LOCALBIN) go install github.com/mitranim/gow@latest
