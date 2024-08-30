@@ -49,7 +49,7 @@ build-server: fmt fmt-templ vet generate ## Build the server binary.
 	go build -o ./bin/server ./cmd/server/main.go
 
 build-cli: fmt vet generate ## Build the CLI binary.
-	go build -o ./bin/totb ./cmd/cli/main.go
+	go build -o ./bin/totb ./cmd/totb/main.go
 
 run-server: fmt fmt-templ vet generate gow ## Run the server.
 	go run ./cmd/server/main.go
@@ -58,7 +58,7 @@ watch-server: fmt fmt-templ vet generate gow ## Run the server, and watch for ch
 	$(GOW) -e go,mod,js run ./cmd/server/main.go
 
 run-cli: fmt vet ## Run the CLI.
-	go run ./cmd/cli/main.go
+	go run ./cmd/totb/main.go
 
 
 ##@ Build Dependencies
