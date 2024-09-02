@@ -39,9 +39,10 @@ func NewText(useWord bool, maxLength int) (*Text, error) {
 		return nil, err
 	}
 
+	randomYear := rand.Intn(time.Now().Year())
 	w := &Text{
 		Word:            fetchedWord,
-		Description:     description,
+		Description:     fmt.Sprintf("%s (%d AD)", description, randomYear),
 		Letters:         generateLetters(fetchedWord),
 		currentLetterNo: 0,
 	}
